@@ -1,0 +1,36 @@
+name: Deploy to maven
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Make Gradlew Executable
+        run: chmod +x gradlew
+
+      - name: Build and Publish to Local
+        run: ./gradlew publish
+
+      - name: Push to maven
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/repo
+          repository-name: Higurashi539/maven
+          branch: main
+          target-folder: .
+          token: ${{ secrets.MAVEN_TOKEN }}
+          clean: false
